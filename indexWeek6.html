@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Distributions Field Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+html{color-scheme:light}
+/* Layout: sticky timestamp nav over a run of lecture-ordered chapters; each chapter = plain-language idea + one interactive figure + symbol key. */
+:root{
+  --bg:#F1F4F9; --surface:#FFFFFF; --ink:#111B33; --ink2:#46526E; --muted:#7784A0; --line:#DBE1EC;
+  --a:#2B4CFF; --a-soft:#E3E8FF; --b:#F2542D; --b-soft:#FFE7E0; --c:#079A85; --c-soft:#D9F4EE;
+  --amber:#B87500; --amber-soft:#FFF1CF;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1324; --surface:#151D33; --ink:#E8ECF7; --ink2:#AAB4CE; --muted:#7784A3; --line:#252F4A;
+  --a:#8195FF; --a-soft:#222C57; --b:#FF8563; --b-soft:#4A2A28; --c:#3ECFB8; --c-soft:#17403F;
+  --amber:#F0B84A; --amber-soft:#3F3413; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1324; --surface:#151D33; --ink:#E8ECF7; --ink2:#AAB4CE; --muted:#7784A3; --line:#252F4A;
+  --a:#8195FF; --a-soft:#222C57; --b:#FF8563; --b-soft:#4A2A28; --c:#3ECFB8; --c-soft:#17403F;
+  --amber:#F0B84A; --amber-soft:#3F3413; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+p{margin:0}
+a{color:var(--a)}
+sup,sub{font-size:.7em;line-height:0}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px;border-radius:4px}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:thin}
+nav.top a{flex:none;text-decoration:none;color:var(--ink2);font-size:13px;padding:6px 11px;border-radius:999px;border:1px solid transparent;display:flex;gap:8px;align-items:baseline;white-space:nowrap}
+nav.top a i{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--muted)}
+nav.top a:hover{background:var(--surface)}
+nav.top a.on{background:var(--ink);color:var(--bg)}
+nav.top a.on i{color:var(--bg);opacity:.7}
+
+/* hero */
+.hero{padding-block:56px 36px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(36px,6vw,68px);font-weight:800;letter-spacing:-.02em;margin-top:14px;max-width:17ch}
+.hero h1 em{font-style:normal;color:var(--a)}
+.hero .sub{max-width:60ch;color:var(--ink2);font-size:18px;margin-top:18px}
+.chain{list-style:none;margin:34px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;counter-reset:st}
+.chain li{counter-increment:st;position:relative}
+.chain a{display:block;height:100%;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px}
+.chain a:hover{border-color:var(--a)}
+.chain a::before{content:counter(st);font-family:var(--mono);font-size:12px;color:var(--a);background:var(--a-soft);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;margin-bottom:12px}
+.chain b{font-family:var(--display);font-size:19px;display:block;margin-bottom:4px}
+.chain span{font-size:13px;color:var(--ink2);line-height:1.4;display:block}
+.chain li:not(:last-child)::after{content:"→";position:absolute;right:-9px;top:20px;z-index:2;color:var(--muted);font-size:14px;background:var(--bg);line-height:1;padding:2px 0}
+.legend-hint{margin-top:22px;display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--ink2)}
+.legend-hint span{display:flex;align-items:center;gap:7px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* chapters */
+section.ch{padding-block:48px;border-top:1px solid var(--line);scroll-margin-top:60px}
+.ch-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:10px}
+.ts{font-family:var(--mono);font-size:12px;color:var(--ink2);background:var(--surface);border:1px solid var(--line);padding:3px 9px;border-radius:999px}
+.ch h2{font-size:clamp(28px,4.4vw,44px);font-weight:700;letter-spacing:-.01em}
+.lead{max-width:64ch;color:var(--ink2);font-size:17px;margin-bottom:26px}
+.lead b{color:var(--ink)}
+.cols{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media(max-width:880px){.cols{grid-template-columns:minmax(0,1fr)}.chain{grid-template-columns:repeat(2,1fr)}.chain li:not(:last-child)::after{display:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}
+.card h3{font-size:18px;margin-bottom:8px}
+.why{border-left:0;background:var(--amber-soft);border-radius:14px;padding:14px 16px;font-size:14.5px;color:var(--ink)}
+.why b{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:3px}
+.note{font-size:13.5px;color:var(--ink2);background:var(--b-soft);border-radius:12px;padding:10px 13px}
+.note b{color:var(--b)}
+.small{font-size:13.5px;color:var(--ink2)}
+.formula{font-family:var(--mono);font-size:15px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px 14px;overflow-x:auto;white-space:nowrap}
+dl.key{display:grid;grid-template-columns:minmax(4.5em,9.5em) 1fr;gap:6px 14px;margin:12px 0 0;font-size:14px}
+dl.key dt{font-family:var(--mono);color:var(--a);font-size:13px;overflow-wrap:anywhere}
+dl.key dd{margin:0;color:var(--ink2)}
+details.check{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14.5px}
+details.check summary{cursor:pointer;font-weight:600;list-style:none;display:flex;gap:10px;align-items:center}
+details.check summary::before{content:"?";font-family:var(--mono);width:22px;height:22px;flex:none;border-radius:50%;background:var(--c-soft);color:var(--c);display:grid;place-items:center;font-size:12px}
+details.check[open] summary::before{content:"✓"}
+details.check p{margin-top:9px;color:var(--ink2)}
+
+/* controls */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tabs .grp{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 4px 0 8px}
+.tabs .grp:first-child{margin-left:0}
+button.chip{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+button.chip:hover{border-color:var(--a)}
+button.chip[aria-pressed="true"]{background:var(--a);border-color:var(--a);color:#fff}
+:root[data-theme="dark"] button.chip[aria-pressed="true"]{color:#0D1324}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) button.chip[aria-pressed="true"]{color:#0D1324}}
+button.act{font:inherit;font-size:14px;font-weight:600;color:#fff;background:var(--a);border:0;border-radius:10px;padding:9px 16px;cursor:pointer}
+:root[data-theme="dark"] button.act{color:#0D1324}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) button.act{color:#0D1324}}
+button.act.ghost{background:var(--a-soft);color:var(--a)}
+.row{display:grid;grid-template-columns:minmax(64px,auto) minmax(0,1fr) 54px;gap:12px;align-items:center;font-size:14px;margin-top:10px}
+.row label{font-family:var(--mono);color:var(--ink2)}
+.row output{font-family:var(--mono);text-align:right;color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--a);min-width:0}
+select{font:inherit;font-size:14px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:7px 10px;max-width:100%}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
+.tile{background:var(--bg);border-radius:12px;padding:10px 12px;min-width:0}
+.tile small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile b{font-family:var(--display);font-size:26px;font-weight:700;display:block;line-height:1.15}
+.tile em{font-style:normal;font-size:12.5px;color:var(--ink2);display:block;font-family:var(--mono);overflow-wrap:anywhere}
+
+/* plots */
+.plot{position:relative;width:100%;margin-top:10px}
+.plot svg{display:block;overflow:visible}
+.gr{stroke:var(--line);stroke-width:1}
+.tk{fill:var(--muted);font-size:11.5px;font-family:var(--mono)}
+.axl{fill:var(--ink2);font-size:12px}
+.bar{fill:var(--a)}
+.area{fill:var(--a);opacity:.18}
+.stroke-a{fill:none;stroke:var(--a);stroke-width:2.2;stroke-linejoin:round}
+.stroke-b{fill:none;stroke:var(--b);stroke-width:2.2;stroke-linejoin:round}
+.stroke-c{fill:none;stroke:var(--c);stroke-width:2.2;stroke-linejoin:round}
+.dash{stroke:var(--b);stroke-width:1.8;stroke-dasharray:5 4}
+.band{fill:var(--a-soft)}
+.lab-b{fill:var(--b);font-size:12px;font-weight:600}
+.lab-a{fill:var(--a);font-size:12px;font-weight:600}
+.lab-c{fill:var(--c);font-size:12px;font-weight:600}
+.gd{stroke:var(--ink2);stroke-width:1;stroke-dasharray:2 3}
+.veil{fill:var(--surface);opacity:.62}
+.shade-b{fill:var(--b);opacity:.28}
+.dotb{fill:var(--b);stroke:var(--surface);stroke-width:2}
+.dota{fill:var(--a);stroke:var(--surface);stroke-width:1.5}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:9px;transform:translate(-50%,-100%);white-space:nowrap;z-index:5;font-family:var(--mono)}
+.cap{font-size:12.5px;color:var(--muted);margin-top:8px}
+
+/* misc widgets */
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:14px}
+.opts button{font:inherit;font-size:14px;text-align:left;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;cursor:pointer}
+.opts button:hover:not(:disabled){border-color:var(--a)}
+.opts button.ok{background:var(--c-soft);border-color:var(--c)}
+.opts button.no{background:var(--b-soft);border-color:var(--b)}
+.scn{font-family:var(--display);font-size:clamp(20px,3vw,26px);font-weight:600;line-height:1.25;margin-top:6px;min-height:2.6em}
+.fb{margin-top:12px;font-size:14.5px;color:var(--ink2);min-height:3.2em}
+.dots{display:flex;gap:6px;margin-top:12px}
+.dots i{width:22px;height:6px;border-radius:3px;background:var(--line)}
+.dots i.ok{background:var(--c)}.dots i.no{background:var(--b)}.dots i.cur{background:var(--a)}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px;font-family:var(--mono)}
+table.t th,table.t td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{color:var(--muted);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}
+table.t tr.sum td{font-weight:600;border-bottom:0;color:var(--a)}
+.scroll-x{overflow-x:auto}
+.grid100{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;margin-top:12px}
+.grid100 i{aspect-ratio:1;border-radius:2px;background:var(--line);display:block}
+.grid100 i.hot{background:var(--b)}
+.stepper{display:grid;gap:8px;margin:0;padding:0;list-style:none;counter-reset:s}
+.stepper li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:14.5px;color:var(--ink2)}
+.stepper li::before{content:counter(s);width:24px;height:24px;border-radius:50%;background:var(--a-soft);color:var(--a);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+.stepper b{color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.chips span{font-family:var(--mono);font-size:12px;background:var(--bg);border-radius:6px;padding:2px 7px;color:var(--ink2)}
+.lie{margin-top:14px}
+.lie .track{position:relative;height:74px;margin:8px 8px 0}
+.lie .ax{position:absolute;left:0;right:0;top:44px;height:2px;background:var(--line)}
+.lie .pt{position:absolute;top:44px;transform:translate(-50%,-50%);border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-family:var(--mono)}
+.lie .mk{position:absolute;top:22px;bottom:0;width:2px;background:var(--b);transform:translateX(-1px)}
+.lie .mk span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;color:var(--b);white-space:nowrap;font-family:var(--mono)}
+.lie .ticks{display:flex;justify-content:space-between;margin:6px 8px 0;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-top:16px}
+.gl div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink2)}
+.gl b{display:flex;justify-content:space-between;gap:8px;color:var(--ink);font-size:15px;margin-bottom:3px}
+.gl b code{font-family:var(--mono);font-size:12.5px;color:var(--a);font-weight:400}
+input[type=search]{font:inherit;width:100%;max-width:420px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.slips{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px}
+.slips div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-size:14px;color:var(--ink2)}
+.slips b{display:block;color:var(--ink);margin-bottom:4px}
+.slips s{color:var(--b);text-decoration-thickness:2px}
+.slips u{text-decoration:none;color:var(--c);font-weight:600}
+footer{padding-block:34px 60px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+</head>
+<body>
+<nav class="top" aria-label="Chapters"><div class="wrap" id="nav"></div></nav>
+
+<header class="wrap hero" id="top">
+  <div class="eyebrow">Field guide · Lecture 06 · Jared Edgerton · 38 min</div>
+  <h1>Probability <em>distributions</em>, moments, simulation</h1>
+  <p class="sub">The lecture shows the math. This page shows what each piece is, why it exists, and what happens when you move it. Everything runs on the lecture's own examples: voters, protests, turnout.</p>
+  <ol class="chain" aria-label="How the lecture's ideas connect">
+    <li><a href="#explore"><b>Story</b><span>What process made this data?</span></a></li>
+    <li><a href="#explore"><b>Distribution</b><span>The shape that fits that story</span></a></li>
+    <li><a href="#explore"><b>Parameters</b><span>The knobs: p, n, λ, μ, σ</span></a></li>
+    <li><a href="#moments"><b>Moments</b><span>Mean, variance, skew: numbers that describe the shape</span></a></li>
+    <li><a href="#mom"><b>Estimate</b><span>Match data moments to formulas, solve for the knobs</span></a></li>
+    <li><a href="#sim"><b>Simulate</b><span>Fake data to test your math and intuition</span></a></li>
+  </ol>
+  <div class="legend-hint">
+    <span><i class="dot" style="background:var(--a)"></i>data, the thing being described</span>
+    <span><i class="dot" style="background:var(--b)"></i>theory, bounds, highlights</span>
+    <span><i class="dot" style="background:var(--c)"></i>checks and simulated results</span>
+    <span>Hover or tap any chart. Drag any slider.</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- 1 EXPLORER -->
+<section class="ch" id="explore">
+  <div class="ch-head"><span class="ts">1:55 – 10:15</span><h2>Distribution explorer</h2></div>
+  <p class="lead">A <b>distribution</b> is a rule for how likely each possible outcome is. Each one comes with a <b>story</b> about how the data arises. Pick a story, then drag its <b>parameters</b> and watch the shape, mean and variance respond.</p>
+  <div class="cols">
+    <div class="col">
+      <div class="card">
+        <div class="tabs" id="ex-tabs"></div>
+        <p class="scn" id="ex-story" style="min-height:0;font-size:20px;margin-top:14px"></p>
+        <p class="small" id="ex-ex" style="margin-top:4px"></p>
+        <div class="tabs" style="margin-top:14px" role="group" aria-label="Chart view">
+          <button class="chip" data-v="shape" aria-pressed="true">Shape</button>
+          <button class="chip" data-v="cdf" aria-pressed="false">Running total (CDF)</button>
+        </div>
+        <div class="plot" id="ex-plot"></div>
+        <p class="cap" id="ex-cap"></p>
+        <div id="ex-sliders"></div>
+        <div class="tiles" id="ex-tiles"></div>
+      </div>
+      <div class="note" id="ex-note" hidden></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3 id="ex-fh">The formula</h3>
+        <div class="formula" id="ex-formula"></div>
+        <dl class="key" id="ex-key"></dl>
+      </div>
+      <div class="why"><b>Why it matters</b>Every regression, Bayesian model and causal setup later in the course assumes one of these shapes for the noise or the outcome. Choosing the shape is choosing your theory of how the data was made.</div>
+      <div class="card">
+        <h3>Three words that trip people up</h3>
+        <dl class="key">
+          <dt>PMF</dt><dd>Discrete only. The bar height is the actual probability of that exact count. Bars sum to 1.</dd>
+          <dt>PDF</dt><dd>Continuous only. Height is density. Probability is the <b>area</b> under the curve, so one exact value has probability 0. The lecture also calls the discrete plots "PDF".</dd>
+          <dt>CDF</dt><dd>The running total: probability of that value or less. Hover the shape view and the shaded part is the CDF.</dd>
+        </dl>
+      </div>
+      <details class="check"><summary>Check yourself: why does a Poisson have no "n"?</summary><p>Poisson counts events arriving over time or space, so there is no fixed number of attempts. Binomial fixes n trials and counts successes. If the number of chances is fixed, use binomial; if events just arrive, use Poisson.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 2 PICK -->
+<section class="ch" id="pick">
+  <div class="ch-head"><span class="ts">17:00 – 38:30</span><h2>Match the story</h2></div>
+  <p class="lead">The lecture's closing skill: read a research situation and name the distribution. Try eight.</p>
+  <div class="cols">
+    <div class="card">
+      <div class="eyebrow" id="pk-n">Scenario 1 of 8</div>
+      <p class="scn" id="pk-q"></p>
+      <div class="opts" id="pk-o"></div>
+      <p class="fb" id="pk-fb"></p>
+      <div class="dots" id="pk-d"></div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap"><button class="act" id="pk-next" hidden>Next scenario</button><button class="act ghost" id="pk-reset" hidden>Start over</button></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>Quick decision map</h3>
+        <dl class="key">
+          <dt>Yes / no</dt><dd>Bernoulli (one trial), binomial (count of yeses in n trials)</dd>
+          <dt>Count, no fixed n</dt><dd>Poisson (add negative binomial if spread is larger than the mean)</dd>
+          <dt>Time until event</dt><dd>Exponential</dd>
+          <dt>Equal chance in a range</dt><dd>Uniform</dd>
+          <dt>Continuous, many small pushes</dt><dd>Normal</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 MOMENTS -->
+<section class="ch" id="moments">
+  <div class="ch-head"><span class="ts">13:30 – 18:54</span><h2>Moment lab</h2></div>
+  <p class="lead">A <b>moment</b> is the average of some power of the variable. Different powers capture different features of the shape. Reshape the protest distribution below and watch all four numbers move.</p>
+  <div class="cols">
+    <div class="card">
+      <h3>Protests per district: drag the weights</h3>
+      <div class="tabs" id="mo-pre" style="margin-bottom:6px"></div>
+      <div id="mo-sliders"></div>
+      <div class="plot" id="mo-plot"></div>
+      <div class="tiles" id="mo-tiles"></div>
+      <div class="scroll-x" style="margin-top:14px"><table class="t" id="mo-table"></table></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>The moment ladder</h3>
+        <dl class="key">
+          <dt>1st: mean</dt><dd>Where the center is. E[X] = Σ x · P(x).</dd>
+          <dt>2nd: variance</dt><dd>How spread out, measured from the mean. E[(X − μ)²]. Standard deviation is its square root, in the original units.</dd>
+          <dt>3rd: skewness</dt><dd>Lopsidedness. Positive means a long right tail.</dd>
+          <dt>4th: kurtosis</dt><dd>Tail weight. Higher means more rare, extreme values.</dd>
+        </dl>
+        <p class="small" style="margin-top:10px"><b>Central</b> means measured around the mean. <b>Standardized</b> means also divided by σ, so units cancel.</p>
+      </div>
+      <div class="why"><b>Why it matters</b>Much of political science is comparing first and second moments: the difference in means between two groups, or the variance in two populations. The formulas for each named distribution are just these moments written in terms of the parameters.</div>
+      <div class="note"><b>Check the lecture's number.</b> With the default weights the variance comes out 1.14. The lecture says 1.04. The shortcut agrees with 1.14: E[X²] − μ² = 3.1 − 1.96.</div>
+      <details class="check"><summary>Check yourself: put all the weight on 0 and 4</summary><p>Use "Two camps". The mean sits at 2, where nobody lives, and the variance and kurtosis behave very differently from the middle-heavy case. A mean alone can hide the shape.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 4 RULES -->
+<section class="ch" id="rules">
+  <div class="ch-head"><span class="ts">10:43 – 17:30</span><h2>Rules that work for any distribution</h2></div>
+  <p class="lead">Three tools that do not care which distribution you have: <b>linearity</b>, the <b>Markov and Chebyshev bounds</b>, and <b>standardizing</b>. They are why so much of the earlier algebra was easy.</p>
+  <div class="cols">
+    <div class="col">
+      <div class="card">
+        <h3>Linearity of expectation</h3>
+        <p class="small">Scale and shift a variable, and its mean scales and shifts the same way. Holds for every distribution.</p>
+        <div id="li-sliders"></div>
+        <div class="formula" id="li-eq" style="margin-top:14px"></div>
+      </div>
+      <div class="card">
+        <h3>Chebyshev: how much can sit far from the mean?</h3>
+        <p class="small">Knowing only the mean and standard deviation, at most 1/k² of the probability lies more than k standard deviations away. Compare with a normal curve.</p>
+        <div id="ch-sliders"></div>
+        <div class="plot" id="ch-plot"></div>
+        <p class="fb" id="ch-out" style="min-height:0"></p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>Markov: a bound from the average alone</h3>
+        <p class="small">For a variable that cannot go below zero, P(X ≥ a) ≤ E[X] / a. Income is the lecture's example.</p>
+        <div id="mk-sliders"></div>
+        <div class="grid100" id="mk-grid"></div>
+        <p class="fb" id="mk-out" style="min-height:0"></p>
+      </div>
+      <div class="card">
+        <h3>Standardizing: the z-score</h3>
+        <p class="small">z = (x − μ) / σ counts how many standard deviations a value sits from the mean. It removes units, so any normal variable maps onto one reference curve.</p>
+        <div id="z-sliders"></div>
+        <div class="plot" id="z-plot"></div>
+        <p class="fb" id="z-out" style="min-height:0"></p>
+      </div>
+      <div class="why"><b>Why it matters</b>Chebyshev gives a guarantee without assuming normality: at least 75% of any distribution lies within 2 SDs. That is useful for long-tailed things like conflict severity, or when all you have is a rough mean and variance.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 MoM -->
+<section class="ch" id="mom">
+  <div class="ch-head"><span class="ts">18:54 – 21:15</span><h2>Method of moments</h2></div>
+  <p class="lead">The bridge from theory to data. A formula says <b>mean = λ</b>. Your data has a <b>sample mean</b>. Set them equal and you have an estimate of λ. A hidden protest rate makes the data below; see how close you get.</p>
+  <div class="cols">
+    <div class="card">
+      <h3>Protests per month in one country</h3>
+      <div id="mm-sliders"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><button class="act" id="mm-draw">Collect new data</button><button class="act ghost" id="mm-new">New mystery rate</button><button class="act ghost" id="mm-rev" aria-pressed="false">Reveal true λ</button></div>
+      <div class="chips" id="mm-chips"></div>
+      <div class="plot" id="mm-plot"></div>
+      <p class="cap">Bars: how often each count showed up in your data. Dots: what a Poisson with your estimated λ predicts.</p>
+      <div class="tiles" id="mm-tiles"></div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>The recipe</h3>
+        <ol class="stepper">
+          <li><span><b>Theory.</b> Write the moment as a formula in the parameters. Poisson: E[X] = λ.</span></li>
+          <li><span><b>Data.</b> Compute the same moment from the sample. Sample mean x̄.</span></li>
+          <li><span><b>Match.</b> Set them equal and solve. λ̂ = x̄. The hat means "estimate".</span></li>
+        </ol>
+      </div>
+      <div class="why"><b>Why it matters</b>Quick, interpretable estimates with no heavy optimization. It also shows exactly how the data informs each parameter.</div>
+      <div class="card">
+        <h3>Same idea, other distributions</h3>
+        <dl class="key">
+          <dt>Exponential</dt><dd>mean is 1/λ, so λ̂ = 1 / x̄</dd>
+          <dt>Binomial (n known)</dt><dd>mean is n·p, so p̂ = x̄ / n</dd>
+          <dt>Normal</dt><dd>μ̂ = x̄ and σ̂² is the sample variance</dd>
+        </dl>
+      </div>
+      <details class="check"><summary>Check yourself: why do estimates wobble at small n?</summary><p>A small sample is a noisy average. Set n to 5 and draw a few times, then set n to 300. This is the law of large numbers, coming up in chapter 7.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 6 JOINT -->
+<section class="ch" id="joint">
+  <div class="ch-head"><span class="ts">21:23 – 29:55</span><h2>Two variables at once</h2></div>
+  <p class="lead">Social science is about how things move together: mobilization and turnout, repression and protest. A <b>joint distribution</b> describes both at once. The tools that follow are <b>conditional expectation</b>, the <b>law of iterated expectations</b>, <b>covariance</b> and <b>correlation</b>.</p>
+  <div class="cols">
+    <div class="col">
+      <div class="card">
+        <h3>Covariance vs correlation</h3>
+        <p class="small">Each dot is a district: ideology score (x) and turnout (y). Blue quadrants add positive co-movement, red ones subtract. Then switch the units of y.</p>
+        <div id="jt-sliders"></div>
+        <div class="tabs" style="margin-top:12px" role="group" aria-label="Units of turnout">
+          <button class="chip" data-u="1" aria-pressed="true">Turnout as proportion (0 – 1)</button>
+          <button class="chip" data-u="100" aria-pressed="false">Turnout as percent (0 – 100)</button>
+        </div>
+        <div class="plot" id="jt-plot"></div>
+        <div class="tiles" id="jt-tiles"></div>
+        <p class="cap">The red line is the average y at each x, an estimate of E[Y | X]. Covariance changes with units. Correlation does not.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>Conditional expectation and iterated expectations</h3>
+        <p class="small"><b>E[X | Y]</b> reads "expected X given Y". Say X is protest count and Y is repression: 5 protests expected under low repression, 2 under high. The overall average is the weighted average of these:</p>
+        <div class="formula" style="margin-top:10px">E[X] = E[ E[X | Y] ]</div>
+        <div id="lie-sliders"></div>
+        <div class="lie"><div class="track" id="lie-track"></div><div class="ticks"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div></div>
+        <p class="fb" id="lie-out" style="min-height:0"></p>
+        <p class="cap">The 5 and 2 come from the lecture. The 50/50 split is only a starting point for you to move.</p>
+      </div>
+      <div class="card">
+        <h3>Formulas</h3>
+        <div class="formula" style="margin-bottom:8px">Cov(X,Y) = E[(X − μx)(Y − μy)]</div>
+        <div class="formula">ρ = Cov(X,Y) / (σx · σy)</div>
+        <dl class="key"><dt>ρ = +1</dt><dd>perfect upward line</dd><dt>ρ = −1</dt><dd>perfect downward line</dd><dt>ρ = 0</dt><dd>no linear relationship (not the same as independent)</dd></dl>
+      </div>
+      <div class="why"><b>Why it matters</b>A regression line is a conditional expectation. Iterated expectations is the rule that lets you handle missing data and adjust for other variables in causal work.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 SIM -->
+<section class="ch" id="sim">
+  <div class="ch-head"><span class="ts">29:58 – 34:52</span><h2>Simulation, LLN and CLT</h2></div>
+  <p class="lead"><b>Simulation</b> means having the computer draw many random values from a distribution you choose, then checking your formulas against the results. Two theorems explain why it works: the <b>law of large numbers</b> (where the average is headed) and the <b>central limit theorem</b> (what shape its uncertainty has on the way).</p>
+  <div class="cols">
+    <div class="col">
+      <div class="card">
+        <h3>Law of large numbers: flip a coin</h3>
+        <div class="row"><label for="ll-p">true p</label><input id="ll-p" type="range" min="0.1" max="0.9" step="0.05" value="0.5"><output id="ll-pv">0.50</output></div>
+        <div class="tabs" style="margin-top:12px" id="ll-n"></div>
+        <div style="margin-top:12px"><button class="act" id="ll-go">Flip again</button></div>
+        <div class="plot" id="ll-plot"></div>
+        <p class="cap">Running proportion of heads. Horizontal axis is the number of flips, on a log scale so the early wobble is visible.</p>
+        <div class="chips" id="ll-chips"></div>
+      </div>
+      <div class="card">
+        <h3>Check a formula by simulation</h3>
+        <p class="small">Binomial with n = 10 trials and p = 0.6. Theory says mean n·p = 6 and variance n·p·(1−p) = 2.4.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px"><label for="bs-n" class="small">Number of simulated draws</label><select id="bs-n"><option>100</option><option>1000</option><option selected>10000</option><option>100000</option></select><button class="act" id="bs-go">Run</button></div>
+        <div class="tiles" id="bs-tiles"></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>Central limit theorem</h3>
+        <p class="small">Draw n values from the population, take their mean. Repeat 4,000 times and plot the means. Start at n = 1, then drag n up.</p>
+        <div class="tabs" style="margin-top:12px" id="cl-pop"></div>
+        <div id="cl-sliders"></div>
+        <div class="plot" id="cl-plot"></div>
+        <p class="cap">Blue bars: your 4,000 sample means. Red line: the normal curve the theorem predicts.</p>
+        <div class="tiles" id="cl-tiles"></div>
+      </div>
+      <div class="card">
+        <h3>Same ground, two theorems</h3>
+        <dl class="key">
+          <dt>LLN</dt><dd>The sample mean converges to the true mean. The destination.</dd>
+          <dt>CLT</dt><dd>The sample mean is approximately normal with variance σ²/n. The road map.</dd>
+          <dt>σ/√n</dt><dd>The standard error: how far a sample mean typically lands from the truth.</dd>
+        </dl>
+      </div>
+      <div class="why"><b>Why it matters</b>The CLT is why the normal shows up everywhere. It underlies standard errors, confidence intervals and hypothesis tests, even when the raw data is skewed.</div>
+      <div class="note"><b>Small precision.</b> The lecture calls the means of 30 standard normal draws "a standard normal". Their spread is 1/√30 ≈ 0.18, not 1. Drag n and compare the two SD tiles.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 DGP -->
+<section class="ch" id="dgp">
+  <div class="ch-head"><span class="ts">34:52 – 38:30</span><h2>The data generating process</h2></div>
+  <p class="lead">A <b>data generating process</b> is your theory of how the data came to exist, written as a formula plus a distribution for the leftover randomness. The lecture's version: campaigning changes turnout by a fixed amount, plus noise.</p>
+  <div class="cols">
+    <div class="card">
+      <h3>Turnout model</h3>
+      <div class="formula" id="dg-eq"></div>
+      <div id="dg-sliders"></div>
+      <div class="plot" id="dg-plot"></div>
+      <p class="cap">Each dot is one simulated area. Thick bars are the group averages. Noise is fixed, so moving a slider moves the same dots.</p>
+    </div>
+    <div class="col">
+      <div class="card">
+        <h3>Reading the model</h3>
+        <dl class="key">
+          <dt>α</dt><dd>Intercept: expected turnout with no campaign. Lecture: 0.4.</dd>
+          <dt>β</dt><dd>Effect of a campaign: the gap between the two group averages. Lecture: 0.3.</dd>
+          <dt>campaign</dt><dd>0 or 1, was a campaign present.</dd>
+          <dt>ε</dt><dd>Error term: random noise centered on 0, with spread σ. Lecture: 0.1.</dd>
+        </dl>
+        <p class="small" style="margin-top:10px"><b>Systematic part:</b> α + β·campaign, the predictable piece. <b>Stochastic part:</b> ε, the noise. Notice α + β·campaign is E[turnout | campaign], a conditional expectation.</p>
+      </div>
+      <div class="card">
+        <h3>Match the data type</h3>
+        <dl class="key">
+          <dt>Yes / no</dt><dd>Bernoulli model, e.g. voted or not</dd>
+          <dt>Counts</dt><dd>Poisson or negative binomial, e.g. protests</dd>
+          <dt>Continuous</dt><dd>Normal, e.g. ideology scores</dd>
+        </dl>
+      </div>
+      <div class="note"><b>Toy-model limit.</b> Raise σ and some dots go above 1 or below 0. Real turnout cannot. The normal noise here is a teaching simplification.</div>
+      <div class="why"><b>The three habit questions</b>What is the data-generating story? Which distribution matches it? How can moments or simulation check my intuition?</div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 REFERENCE -->
+<section class="ch" id="ref">
+  <div class="ch-head"><span class="ts">reference</span><h2>Glossary and lecture slips</h2></div>
+  <input type="search" id="gl-q" placeholder="Search a term or symbol" aria-label="Search glossary">
+  <div class="gl" id="gl"></div>
+  <h3 style="margin-top:36px;font-size:24px">Where the captions or lecture diverge from the math</h3>
+  <p class="small" style="margin-top:6px">Worked out from the auto-captions and standard results. Check against the slides.</p>
+  <div class="slips">
+    <div><b>Binomial mean</b>Captions say <s>n minus p</s>. It is <u>n × p</u>.</div>
+    <div><b>Uniform variance</b>Captions give <s>(b − a)²</s>. Standard formula is <u>(b − a)² / 12</u>.</div>
+    <div><b>Protest variance</b>Lecture says <s>1.04</s>. The table gives <u>1.14</u>.</div>
+    <div><b>Poisson at λ = 2</b>Lecture says the bar at 2 is slightly higher. Bars at 1 and 2 are <u>exactly equal</u> (0.271).</div>
+    <div><b>CLT demo</b>Means of 30 standard normals have SD <u>≈ 0.18</u>, not 1, unless rescaled.</div>
+    <div><b>Turnout noise</b>"Sigma squared" is given as 0.1, but 0.1 behaves as <u>σ</u>, the spread.</div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Built from the auto-generated transcript of "lecture 06" (methods_lectures). Some worked numbers and the 50/50 split in the iterated-expectations demo are illustrations added here, not the lecturer's.</div></footer>
+
+<script>
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const f=(v,d=2)=>Number(v).toFixed(d);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function ticks(a,b,n=5){const span=b-a,raw=span/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),r=raw/mag,st=(r<1.5?1:r<3?2:r<7?5:10)*mag,o=[];for(let v=Math.ceil(a/st-1e-9)*st;v<=b+1e-9;v+=st)o.push(+v.toFixed(10));return o}
+const lf=[0];for(let i=1;i<=500;i++)lf[i]=lf[i-1]+Math.log(i);
+const binomPmf=(k,n,p)=>k<0||k>n?0:p<=0?(k===0?1:0):p>=1?(k===n?1:0):Math.exp(lf[n]-lf[k]-lf[n-k]+k*Math.log(p)+(n-k)*Math.log(1-p));
+const poisPmf=(k,l)=>Math.exp(-l+k*Math.log(l)-lf[k]);
+const erf=x=>{const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x))};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const normPdf=(x,m,s)=>Math.exp(-0.5*((x-m)/s)**2)/(s*Math.sqrt(2*Math.PI));
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const randn=(r=Math.random)=>{let u=0;while(!u)u=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r())};
+const rpois=(l,r=Math.random)=>{const L=Math.exp(-l);let k=0,p=1;do{k++;p*=r()}while(p>L);return k-1};
+const rexp=(l,r=Math.random)=>-Math.log(1-r())/l;
+const grid=(a,b,n)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+function cumsum(a){let s=0;return a.map(v=>(s+=v))}
+function trapz(xs,ys){const o=[0];for(let i=1;i<xs.length;i++)o.push(Math.min(1,o[i-1]+(ys[i]+ys[i-1])/2*(xs[i]-xs[i-1])));return o}
+function mount(el,fn){el._draw=fn;new ResizeObserver(()=>fn()).observe(el);fn()}
+function rangeRow(id,label,min,max,step,val,dec=2){return `<div class="row"><label for="${id}">${label}</label><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}" data-dec="${dec}"><output id="${id}-o">${f(val,dec)}</output></div>`}
+function bindRanges(root,cb){root.addEventListener('input',e=>{const t=e.target;if(t.type!=='range')return;$('#'+t.id+'-o').textContent=f(t.value,+t.dataset.dec);cb(t)})}
+function segment(el,items,cur,cb){el.innerHTML=items.map(([k,l])=>`<button class="chip" data-k="${k}" aria-pressed="${k==cur}">${l}</button>`).join('');el.onclick=e=>{const b=e.target.closest('button');if(!b)return;$$('button',el).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b.dataset.k)}}
+
+/* ---------- generic plot: bars / area / cdf ---------- */
+function plot(el,s){
+  const W=Math.max(280,el.clientWidth),H=s.h||270,m={l:46,r:14,t:16,b:34},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const cdfV=s.view==='cdf',vals=cdfV?s.cdf:s.ys,ymax=cdfV?1:Math.max(...s.ys,1e-9)*1.15;
+  const yp=v=>m.t+ih-v/ymax*ih,n=s.xs.length,step=iw/n,bw=s.binw||1;
+  const xp=s.discrete?v=>m.l+((v-s.xs[0])/bw+.5)*step:v=>m.l+(v-s.x0)/(s.x1-s.x0)*iw;
+  const xi=s.discrete?i=>m.l+(i+.5)*step:i=>xp(s.xs[i]);
+  const dec=cdfV?2:(ymax<.1?3:2);let g='';
+  ticks(0,ymax,4).forEach(t=>{g+=`<line class="gr" x1="${m.l}" x2="${W-m.r}" y1="${yp(t)}" y2="${yp(t)}"/><text class="tk" x="${m.l-8}" y="${yp(t)+4}" text-anchor="end">${f(t,dec)}</text>`});
+  if(s.discrete){const ev=Math.ceil(n/(iw<420?7:12));s.xs.forEach((x,i)=>{if(i%ev===0)g+=`<text class="tk" x="${xi(i)}" y="${H-12}" text-anchor="middle">${s.xl?s.xl(i):x}</text>`})}
+  else ticks(s.x0,s.x1,iw<420?5:8).forEach(t=>{g+=`<text class="tk" x="${xp(t)}" y="${H-12}" text-anchor="middle">${t}</text>`});
+  if(!cdfV&&s.sd!=null){const a=clamp(xp(s.mean-s.sd),m.l,W-m.r),b=clamp(xp(s.mean+s.sd),m.l,W-m.r);g+=`<rect class="band" x="${a}" y="${m.t}" width="${Math.max(0,b-a)}" height="${ih}"/>`}
+  if(s.discrete){s.xs.forEach((x,i)=>{const h=vals[i]/ymax*ih;g+=`<rect class="bar" x="${xi(i)-step*.36}" y="${yp(vals[i])}" width="${step*.72}" height="${Math.max(0,h)}" rx="3"/>`})}
+  else{const p=s.xs.map((x,i)=>`${xp(x)},${yp(vals[i])}`).join(' L');g+=`<path class="area" d="M${xp(s.xs[0])},${yp(0)} L${p} L${xp(s.xs[n-1])},${yp(0)}Z"/><path class="stroke-a" d="M${p}"/>`}
+  if(s.overlay){if(s.dots)s.overlay.forEach((v,i)=>{g+=`<circle class="dotb" cx="${xi(i)}" cy="${yp(v)}" r="4.5"/>`});else g+=`<path class="stroke-b" d="M${s.overlay.map((v,i)=>`${xi(i)},${yp(v)}`).join(' L')}"/>`}
+  if(!cdfV&&s.mean!=null&&!s.nomean){const mx=xp(s.mean);g+=`<line class="dash" x1="${mx}" x2="${mx}" y1="${m.t}" y2="${m.t+ih}"/><text class="lab-b" x="${clamp(mx+6,m.l,W-m.r-34)}" y="${m.t+11}">mean</text>`}
+  const shade=i=>{let o=`<line class="gd" x1="${xi(i)}" x2="${xi(i)}" y1="${m.t}" y2="${m.t+ih}"/>`;
+    if(!cdfV){if(s.discrete){for(let j=i+1;j<n;j++)o+=`<rect class="veil" x="${xi(j)-step*.36}" y="${yp(vals[j])}" width="${step*.72}" height="${Math.max(0,vals[j]/ymax*ih)}" rx="3"/>`}
+      else{const p=s.xs.slice(0,i+1).map((x,j)=>`${xp(x)},${yp(vals[j])}`).join(' L');o+=`<path class="shade-b" d="M${xp(s.xs[0])},${yp(0)} L${p} L${xi(i)},${yp(0)}Z"/>`}}
+    else o+=`<line class="gd" x1="${m.l}" x2="${xi(i)}" y1="${yp(vals[i])}" y2="${yp(vals[i])}"/><circle class="dotb" cx="${xi(i)}" cy="${yp(vals[i])}" r="5"/>`;return o};
+  const fx=s.fixed!=null?s.fixed:null;
+  el.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${s.aria||'Chart'}">${g}<g id="hv">${fx!=null?shade(fx)+(s.fixedLabel?`<text class="lab-b" x="${xi(fx)+6}" y="${m.t+24}">${s.fixedLabel}</text>`:''):''}</g><rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="touch-action:pan-y"/></svg><div class="tip" hidden></div>`;
+  if(fx!=null)return;
+  const hit=$('rect[fill="transparent"]',el),hv=$('#hv',el),tip=$('.tip',el);
+  const at=e=>{const px=e.clientX-hit.getBoundingClientRect().left;let i=s.discrete?Math.floor(px/step):Math.round(px/iw*(n-1));i=clamp(i,0,n-1);hv.innerHTML=shade(i);tip.hidden=false;tip.innerHTML=s.tip(i);tip.style.left=clamp(xi(i),70,W-70)+'px';tip.style.top=(yp(vals[i])-8)+'px'};
+  hit.addEventListener('pointermove',at);hit.addEventListener('pointerdown',at);hit.addEventListener('pointerleave',()=>{hv.innerHTML='';tip.hidden=true});
+}
+
+/* ---------- generic line chart ---------- */
+function lines(el,s){
+  const W=Math.max(280,el.clientWidth),H=s.h||250,m={l:46,r:s.rm||70,t:16,b:36},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const lx=v=>s.xlog?Math.log10(v):v,xp=v=>m.l+(lx(v)-lx(s.x0))/(lx(s.x1)-lx(s.x0))*iw,yp=v=>m.t+ih-(v-s.y0)/(s.y1-s.y0)*ih;let g='';
+  s.yticks.forEach(t=>{g+=`<line class="gr" x1="${m.l}" x2="${W-m.r}" y1="${yp(t)}" y2="${yp(t)}"/><text class="tk" x="${m.l-8}" y="${yp(t)+4}" text-anchor="end">${s.yfmt(t)}</text>`});
+  s.xticks.forEach(t=>{g+=`<text class="tk" x="${xp(t)}" y="${H-14}" text-anchor="middle">${t>=1000?(t/1000)+'k':t}</text>`});
+  if(s.hline!=null)g+=`<line class="dash" x1="${m.l}" x2="${W-m.r}" y1="${yp(s.hline)}" y2="${yp(s.hline)}"/><text class="lab-b" x="${W-m.r+6}" y="${yp(s.hline)+4}">${s.hlabel||''}</text>`;
+  s.series.forEach(se=>{g+=`<path class="stroke-${se.c}" d="M${se.pts.map(p=>`${xp(p[0])},${yp(p[1])}`).join(' L')}"/>`;const L=se.pts[se.pts.length-1];g+=`<text class="lab-${se.c}" x="${xp(L[0])+6}" y="${yp(L[1])+4+(se.dy||0)}">${se.name}</text>`});
+  if(s.mark!=null){const mx=xp(s.mark);g+=`<line class="gd" x1="${mx}" x2="${mx}" y1="${m.t}" y2="${m.t+ih}"/>`;s.series.forEach(se=>{const p=se.pts.reduce((a,b)=>Math.abs(b[0]-s.mark)<Math.abs(a[0]-s.mark)?b:a);g+=`<circle class="dot${se.c}" cx="${xp(p[0])}" cy="${yp(p[1])}" r="5" style="fill:var(--${se.c==='a'?'a':se.c==='b'?'b':'c'});stroke:var(--surface);stroke-width:2"/>`})}
+  el.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${s.aria||'Line chart'}">${g}<g id="hv"></g><rect x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent" style="touch-action:pan-y"/></svg><div class="tip" hidden></div>`;
+  if(!s.tip)return;const hit=$('rect[fill="transparent"]',el),hv=$('#hv',el),tip=$('.tip',el),base=s.series[0].pts;
+  const at=e=>{const px=e.clientX-hit.getBoundingClientRect().left+m.l;let bi=0,bd=1e9;base.forEach((p,i)=>{const d=Math.abs(xp(p[0])-px);if(d<bd){bd=d;bi=i}});const x=xp(base[bi][0]);hv.innerHTML=`<line class="gd" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ih}"/>`+s.series.map(se=>`<circle cx="${x}" cy="${yp(se.pts[bi][1])}" r="4.5" style="fill:var(--${se.c});stroke:var(--surface);stroke-width:2"/>`).join('');tip.hidden=false;tip.innerHTML=s.tip(bi);tip.style.left=clamp(x,80,W-80)+'px';tip.style.top=(m.t+14)+'px'};
+  hit.addEventListener('pointermove',at);hit.addEventListener('pointerdown',at);hit.addEventListener('pointerleave',()=>{hv.innerHTML='';tip.hidden=true});
+}
+
+/* ---------- nav ---------- */
+const CH=[['explore','1:55','Distributions'],['pick','17:00','Match the story'],['moments','13:30','Moments'],['rules','10:43','Rules'],['mom','18:54','Method of moments'],['joint','21:23','Two variables'],['sim','29:58','Simulation'],['dgp','34:52','Data generating'],['ref','ref','Glossary']];
+$('#nav').innerHTML=CH.map(c=>`<a href="#${c[0]}" data-id="${c[0]}"><i>${c[1]}</i>${c[2]}</a>`).join('');
+const spy=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$$('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id));const a=$('#nav a.on');if(a){const n=$('#nav');n.scrollTo({left:a.offsetLeft-20,behavior:'smooth'})}}})},{rootMargin:'-30% 0px -60% 0px'});
+$$('section.ch').forEach(s=>spy.observe(s));
+
+/* ---------- 1 explorer ---------- */
+const D={
+ bernoulli:{label:'Bernoulli',kind:'d',prm:[['p','p',.01,.99,.01,.6]],xs:P=>[0,1],pmf:(k,P)=>k?P.p:1-P.p,mean:P=>P.p,vari:P=>P.p*(1-P.p),
+  mt:P=>`p = ${f(P.p)}`,vt:P=>`p(1−p) = ${f(P.p)} × ${f(1-P.p)}`,
+  story:'One trial, two possible outcomes: success or failure.',ex:'A voter turns out or stays home. A legislator votes yes or no.',
+  fh:'P(X = x) = p<sup>x</sup> (1 − p)<sup>1−x</sup>',key:[['x','the outcome: 1 for success, 0 for failure'],['p','probability of success, the only parameter']],cap:'Bars: P(X = x). Dashed: mean. Band: ±1 SD. Hover to shade the running total.'},
+ binomial:{label:'Binomial',kind:'d',prm:[['n','n',1,30,1,5],['p','p',.01,.99,.01,.6]],xs:P=>Array.from({length:P.n+1},(_,i)=>i),pmf:(k,P)=>binomPmf(k,P.n,P.p),mean:P=>P.n*P.p,vari:P=>P.n*P.p*(1-P.p),
+  mt:P=>`n × p = ${P.n} × ${f(P.p)} = ${f(P.n*P.p)}`,vt:P=>`n·p·(1−p) = ${f(P.n*P.p*(1-P.p))}`,
+  story:'Stack n identical, independent Bernoulli trials and count the successes.',ex:'Out of n close races, how many does a party win? Try n = 5, p = 0.6 and hover k = 3: the lecture example, 0.3456.',
+  fh:'P(X = k) = C(n, k) · p<sup>k</sup> · (1 − p)<sup>n−k</sup>',key:[['k','number of successes'],['n','number of trials, fixed in advance'],['p','probability of success on each trial'],['C(n, k)','"n choose k": the number of ways to pick which k trials succeed'],['k!','k factorial, k × (k−1) × … × 1']],cap:'Bars: P(X = k). It is a sum of n Bernoullis, so mean = n·p and variance = n·p·(1−p).'},
+ poisson:{label:'Poisson',kind:'d',prm:[['λ','λ',.2,12,.1,2]],xs:P=>Array.from({length:19},(_,i)=>i),pmf:(k,P)=>poisPmf(k,P['λ']),mean:P=>P['λ'],vari:P=>P['λ'],
+  mt:P=>`λ = ${f(P['λ'])}`,vt:P=>`λ = ${f(P['λ'])} (same as the mean)`,
+  story:'Events arrive at random over time or space. No fixed number of trials; you count events per unit of exposure.',ex:'Protests per month in a country. Terrorist incidents in a region in a given week.',
+  fh:'P(X = k) = λ<sup>k</sup> · e<sup>−λ</sup> / k!',key:[['k','count of events'],['λ','expected count per unit of time or exposure'],['e','≈ 2.718, base of natural exponentials'],['k!','k factorial']],cap:'Poisson mean and variance are both λ. Independent Poisson counts at λ₁ and λ₂ add to a Poisson at λ₁ + λ₂.',
+  note:'At λ = 2, the bars for k = 1 and k = 2 are exactly equal (0.271). The lecture says 2 is slightly higher.'},
+ exponential:{label:'Exponential',kind:'c',x0:0,x1:10,prm:[['λ','λ',.2,3,.05,1]],pdf:(x,P)=>P['λ']*Math.exp(-P['λ']*x),mean:P=>1/P['λ'],vari:P=>1/P['λ']**2,
+  mt:P=>`1/λ = 1/${f(P['λ'])} = ${f(1/P['λ'])}`,vt:P=>`1/λ² = ${f(1/P['λ']**2)}`,
+  story:'Waiting time until the next event. If events arrive as a Poisson process at rate λ, waits are exponential.',ex:'Days until the next protest. Time until a country slides back into civil war.',
+  fh:'f(x) = λ · e<sup>−λx</sup>,  x ≥ 0',key:[['x','waiting time, zero or more'],['λ','rate: events per unit time. Higher rate, shorter waits.'],['f(x)','density, not probability. Area is probability.']],cap:'Most of the area sits near zero: short waits are common, long waits are rare.'},
+ uniform:{label:'Uniform',kind:'c',x0:0,x1:12,prm:[['a','a',0,8,.5,2],['b','b',1,12,.5,8]],fix:P=>{if(P.b<=P.a)P.b=Math.min(12,P.a+.5)},pdf:(x,P)=>x>=P.a&&x<=P.b?1/(P.b-P.a):0,mean:P=>(P.a+P.b)/2,vari:P=>(P.b-P.a)**2/12,
+  mt:P=>`(a+b)/2 = ${f((P.a+P.b)/2)}`,vt:P=>`(b−a)²/12 = ${f((P.b-P.a)**2/12)}`,
+  story:'Total ignorance inside a range: every value between a and b is equally likely.',ex:'A poll response could arrive at any moment in a 10-minute window.',
+  fh:'f(x) = 1 / (b − a),  a ≤ x ≤ b',key:[['a, b','lower and upper bounds'],['1/(b − a)','the constant height, chosen so total area is 1']],cap:'Flat density, so the CDF climbs in a straight line from 0 at a to 1 at b.',
+  note:'The captions give the variance as (b − a)². The standard formula has a /12: (b − a)² / 12.'},
+ normal:{label:'Normal',kind:'c',x0:-8,x1:8,prm:[['μ','μ',-3,3,.1,0],['σ','σ',.3,3,.1,1]],pdf:(x,P)=>normPdf(x,P['μ'],P['σ']),mean:P=>P['μ'],vari:P=>P['σ']**2,
+  mt:P=>`μ = ${f(P['μ'])}`,vt:P=>`σ² = ${f(P['σ']**2)}`,
+  story:'The sum or average of many small, independent influences.',ex:'Voter ideology scores, survey responses. The lecturer notes real ideology data may have heavier tails.',
+  fh:'f(x) = 1 / (σ√(2π)) · exp( −(x − μ)² / (2σ²) )',key:[['μ','mean: where the bell is centered'],['σ','standard deviation: how wide it is'],['σ²','variance']],cap:'Symmetric, so the mean sits in the middle. About 68% of the area is within 1 SD (the band) and 95% within 2 SD.'}
+};
+const st={},ex={cur:'binomial',view:'shape'};
+for(const k in D){st[k]={};D[k].prm.forEach(p=>st[k][p[0]]=p[5])}
+$('#ex-tabs').innerHTML='<span class="grp">Discrete</span>'+['bernoulli','binomial','poisson'].map(k=>`<button class="chip" data-k="${k}">${D[k].label}</button>`).join('')+'<span class="grp">Continuous</span>'+['exponential','uniform','normal'].map(k=>`<button class="chip" data-k="${k}">${D[k].label}</button>`).join('');
+function exSpec(){const d=D[ex.cur],P=st[ex.cur];let xs,ys,cdf;
+  if(d.kind==='d'){xs=d.xs(P);ys=xs.map(k=>d.pmf(k,P));cdf=cumsum(ys)}else{xs=grid(d.x0,d.x1,480);ys=xs.map(x=>d.pdf(x,P));cdf=trapz(xs,ys)}
+  return{discrete:d.kind==='d',xs,ys,cdf,x0:d.x0,x1:d.x1,mean:d.mean(P),sd:Math.sqrt(d.vari(P)),view:ex.view,aria:d.label+' distribution',
+   tip:i=>d.kind==='d'?`P(X = ${xs[i]}) = ${f(ys[i],4)}<br>P(X ≤ ${xs[i]}) = ${f(cdf[i],4)}`:`x = ${f(xs[i],2)}<br>density = ${f(ys[i],3)}<br>P(X ≤ x) = ${f(cdf[i],3)}`}}
+function exRender(){const d=D[ex.cur],P=st[ex.cur];
+  $$('#ex-tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===ex.cur));
+  $('#ex-story').textContent=d.story;$('#ex-ex').textContent=d.ex;$('#ex-formula').innerHTML=d.fh;
+  $('#ex-fh').textContent=d.kind==='d'?'The formula (PMF)':'The formula (PDF)';
+  $('#ex-key').innerHTML=d.key.map(k=>`<dt>${k[0]}</dt><dd>${k[1]}</dd>`).join('');
+  $('#ex-cap').textContent=ex.view==='cdf'?'Bars or curve: probability of this value or less, rising from 0 to 1.':d.cap;
+  const nb=$('#ex-note');nb.hidden=!d.note;if(d.note)nb.innerHTML='<b>Heads-up.</b> '+d.note;
+  $('#ex-tiles').innerHTML=`<div class="tile"><small>Mean</small><b>${f(d.mean(P))}</b><em>${d.mt(P)}</em></div><div class="tile"><small>Variance</small><b>${f(d.vari(P))}</b><em>${d.vt(P)}</em></div><div class="tile"><small>Std. deviation</small><b>${f(Math.sqrt(d.vari(P)))}</b><em>√variance</em></div>`;
+  $('#ex-plot')._draw&&$('#ex-plot')._draw()}
+function exSliders(){const d=D[ex.cur],P=st[ex.cur];$('#ex-sliders').innerHTML=d.prm.map((p,i)=>rangeRow('exs-'+i,p[1],p[2],p[3],p[4],P[p[0]],p[4]<1?(p[4]<.1?2:1):0)).join('')}
+$('#ex-tabs').onclick=e=>{const b=e.target.closest('button[data-k]');if(!b)return;ex.cur=b.dataset.k;exSliders();exRender()};
+$('#ex-sliders').addEventListener('input',e=>{const t=e.target;if(t.type!=='range')return;$('#'+t.id+'-o').textContent=f(t.value,+t.dataset.dec);const d=D[ex.cur],P=st[ex.cur];d.prm.forEach((p,i)=>{const el=$('#exs-'+i);P[p[0]]=+el.value});if(d.fix){d.fix(P);d.prm.forEach((p,i)=>{const el=$('#exs-'+i);el.value=P[p[0]];$('#'+el.id+'-o').textContent=f(P[p[0]],+el.dataset.dec)})}exRender()});
+$$('button[data-v]').forEach(b=>b.onclick=()=>{ex.view=b.dataset.v;$$('button[data-v]').forEach(x=>x.setAttribute('aria-pressed',x===b));exRender()});
+mount($('#ex-plot'),()=>plot($('#ex-plot'),exSpec()));exSliders();exRender();
+
+/* ---------- 2 pick ---------- */
+const SC=[['Did a particular legislator vote yes on a bill?','bernoulli','One trial, two outcomes: Bernoulli.'],
+['Out of 40 close House races, how many does one party win?','binomial','A fixed number of trials (40), and you count successes: binomial.'],
+['How many protests happen in a country each month?','poisson','Events arriving over time with no fixed number of trials: Poisson.'],
+['Days until the next protest after the last one.','exponential','Waiting time until the next event: exponential.'],
+['A poll response could arrive at any moment in a 10-minute window. When does it arrive?','uniform','Every moment in the range equally likely: uniform.'],
+['Whether a given voter turns out.','bernoulli','Yes or no for one person: Bernoulli.'],
+['Voter ideology scores, assumed shaped by many small influences.','normal','Continuous and driven by many small pushes: normal.'],
+['Coup attempts per state per decade.','poisson','A count per unit of exposure, no fixed n: Poisson.']];
+const pk={i:0,res:[],done:false};
+function pkRender(){const s=SC[pk.i];$('#pk-n').textContent=`Scenario ${pk.i+1} of ${SC.length}`;$('#pk-q').textContent=s[0];
+  $('#pk-o').innerHTML=Object.keys(D).map(k=>`<button data-k="${k}">${D[k].label}</button>`).join('');
+  $('#pk-fb').textContent='';$('#pk-next').hidden=true;
+  $('#pk-d').innerHTML=SC.map((_,i)=>`<i class="${pk.res[i]||(i===pk.i?'cur':'')}"></i>`).join('')}
+$('#pk-o').onclick=e=>{const b=e.target.closest('button');if(!b||pk.res[pk.i])return;const s=SC[pk.i],ok=b.dataset.k===s[1];pk.res[pk.i]=ok?'ok':'no';
+  $$('#pk-o button').forEach(x=>{x.disabled=true;if(x.dataset.k===s[1])x.classList.add('ok')});if(!ok)b.classList.add('no');
+  $('#pk-fb').innerHTML=(ok?'<b>Right.</b> ':'<b>Not quite.</b> ')+s[2];
+  $('#pk-d').innerHTML=SC.map((_,i)=>`<i class="${pk.res[i]||''}"></i>`).join('');
+  if(pk.i<SC.length-1){$('#pk-next').hidden=false}else{const n=pk.res.filter(x=>x==='ok').length;$('#pk-fb').innerHTML+=`<br><b>You got ${n} of ${SC.length}.</b>`;$('#pk-reset').hidden=false}};
+$('#pk-next').onclick=()=>{pk.i++;pkRender()};$('#pk-reset').onclick=()=>{pk.i=0;pk.res=[];$('#pk-reset').hidden=true;pkRender()};pkRender();
+
+/* ---------- 3 moments ---------- */
+const mo={w:[20,40,25,10,5]};
+const PRE=[['lec','Lecture example',[20,40,25,10,5]],['sym','Symmetric',[5,25,40,25,5]],['skew','Right-skewed',[50,25,13,8,4]],['two','Two camps',[45,5,0,5,45]]];
+segment($('#mo-pre'),PRE.map(p=>[p[0],p[1]]),'lec',k=>{mo.w=PRE.find(p=>p[0]===k)[2].slice();$$('#mo-sliders input').forEach((el,i)=>{el.value=mo.w[i];$('#'+el.id+'-o').textContent=el.value});moRender()});
+$('#mo-sliders').innerHTML=mo.w.map((w,i)=>rangeRow('mw'+i,`x = ${i}`,0,100,1,w,0)).join('');
+bindRanges($('#mo-sliders'),t=>{mo.w[+t.id.slice(2)]=+t.value;$$('#mo-pre button').forEach(b=>b.setAttribute('aria-pressed','false'));moRender()});
+function moStats(){let s=mo.w.reduce((a,b)=>a+b,0);const w=s?mo.w:[1,0,0,0,0];s=s||1;const P=w.map(v=>v/s),xs=[0,1,2,3,4],mu=P.reduce((a,p,i)=>a+p*i,0),v=P.reduce((a,p,i)=>a+p*(i-mu)**2,0),sd=Math.sqrt(v);
+  return{P,xs,mu,v,sd,sk:sd>1e-9?P.reduce((a,p,i)=>a+p*((i-mu)/sd)**3,0):null,ku:sd>1e-9?P.reduce((a,p,i)=>a+p*((i-mu)/sd)**4,0):null}}
+function moRender(){const S=moStats();
+  $('#mo-tiles').innerHTML=`<div class="tile"><small>1st · mean</small><b>${f(S.mu)}</b><em>location</em></div><div class="tile"><small>2nd · variance</small><b>${f(S.v)}</b><em>SD ${f(S.sd)}</em></div><div class="tile"><small>3rd · skewness</small><b>${S.sk==null?'n/a':f(S.sk)}</b><em>${S.sk==null?'':S.sk>.15?'long right tail':S.sk<-.15?'long left tail':'roughly symmetric'}</em></div><div class="tile"><small>4th · kurtosis</small><b>${S.ku==null?'n/a':f(S.ku)}</b><em>${S.ku==null?'':S.ku>3.3?'heavy tails':S.ku<2.7?'light tails':'near-normal (3)'}</em></div>`;
+  $('#mo-table').innerHTML=`<tr><th>x</th><th>P(x)</th><th>x·P</th><th>(x−μ)²·P</th></tr>`+S.xs.map((x,i)=>`<tr><td>${x}</td><td>${f(S.P[i],3)}</td><td>${f(x*S.P[i],3)}</td><td>${f((x-S.mu)**2*S.P[i],3)}</td></tr>`).join('')+`<tr class="sum"><td>total</td><td>${f(S.P.reduce((a,b)=>a+b,0),2)}</td><td>${f(S.mu,3)}</td><td>${f(S.v,3)}</td></tr>`;
+  $('#mo-plot')._draw&&$('#mo-plot')._draw()}
+mount($('#mo-plot'),()=>{const S=moStats();plot($('#mo-plot'),{discrete:true,xs:S.xs,ys:S.P,cdf:cumsum(S.P),mean:S.mu,sd:S.sd,view:'shape',h:220,aria:'Protest count distribution',tip:i=>`P(X = ${i}) = ${f(S.P[i],3)}`})});moRender();
+
+/* ---------- 4 rules ---------- */
+$('#li-sliders').innerHTML=rangeRow('la','a',-3,5,.5,2,1)+rangeRow('lb','b',-5,10,1,3,0)+rangeRow('lm','E[X]',0,10,.5,5,1);
+function liR(){const a=+$('#la').value,b=+$('#lb').value,m=+$('#lm').value;$('#li-eq').innerHTML=`Y = ${a}·X + ${b}<br>E[Y] = ${a} × ${m} + ${b} = <b style="color:var(--b)">${f(a*m+b,1)}</b>`}
+bindRanges($('#li-sliders'),liR);liR();
+$('#ch-sliders').innerHTML=rangeRow('chk','k (SDs)',1,4,.1,2,1);
+function chR(){const k=+$('#chk').value;const pts=grid(1,4,61);const bound=pts.map(x=>[+x.toFixed(2),Math.min(1,1/x**2)]),norm=pts.map(x=>[+x.toFixed(2),2*(1-Phi(x))]);
+  mount_ch.k=k;$('#ch-plot')._draw();$('#ch-out').innerHTML=`Beyond ${f(k,1)} SDs: Chebyshev says at most <b style="color:var(--b)">${f(Math.min(1,1/k**2)*100,1)}%</b>, so at least ${f(100-Math.min(1,1/k**2)*100,1)}% lies within. A normal curve actually has <b style="color:var(--a)">${f(2*(1-Phi(k))*100,1)}%</b> out there.`}
+const mount_ch={k:2};
+mount($('#ch-plot'),()=>{const pts=grid(1,4,61).map(x=>+x.toFixed(2));lines($('#ch-plot'),{h:230,x0:1,x1:4,y0:0,y1:1,yticks:[0,.25,.5,.75,1],xticks:[1,2,3,4],yfmt:v=>Math.round(v*100)+'%',mark:mount_ch.k,rm:78,aria:'Chebyshev bound versus normal tail',
+ series:[{name:'Chebyshev cap',c:'b',dy:-6,pts:pts.map(x=>[x,Math.min(1,1/x**2)])},{name:'Normal',c:'a',dy:8,pts:pts.map(x=>[x,2*(1-Phi(x))])}],tip:i=>`k = ${f(pts[i],2)}<br>cap ${f(Math.min(1,1/pts[i]**2)*100,1)}%<br>normal ${f(2*(1-Phi(pts[i]))*100,1)}%`})});
+bindRanges($('#ch-sliders'),chR);chR();
+$('#mk-sliders').innerHTML=rangeRow('mkm','mean ($k)',10,100,5,50,0)+rangeRow('mka','threshold',50,400,10,200,0);
+function mkR(){const m=+$('#mkm').value,a=Math.max(+$('#mka').value,m),b=Math.min(1,m/a);$('#mk-grid').innerHTML=Array.from({length:100},(_,i)=>`<i class="${i<Math.round(b*100)?'hot':''}"></i>`).join('');$('#mk-out').innerHTML=`Average income is $${m}k. At most <b style="color:var(--b)">${Math.round(b*100)} of every 100 people</b> can earn $${a}k or more, since ${m}/${a} = ${f(b,2)}.`}
+bindRanges($('#mk-sliders'),mkR);mkR();
+$('#z-sliders').innerHTML=rangeRow('zx','x',20,100,1,72,0)+rangeRow('zm','μ',40,80,1,60,0)+rangeRow('zs','σ',2,15,1,8,0);
+const zS=()=>({x:+$('#zx').value,m:+$('#zm').value,s:+$('#zs').value});
+function zR(){const{x,m,s}=zS(),z=(x-m)/s;$('#z-out').innerHTML=`z = (${x} − ${m}) / ${s} = <b style="color:var(--b)">${f(z)}</b>. That is ${f(Math.abs(z))} SDs ${z>=0?'above':'below'} the mean; about ${f(Phi(z)*100,1)}% of a normal population scores lower.`;$('#z-plot')._draw()}
+mount($('#z-plot'),()=>{const{x,m,s}=zS(),lo=m-4*s,hi=m+4*s,xs=grid(lo,hi,400),ys=xs.map(v=>normPdf(v,m,s));let fi=0;xs.forEach((v,i)=>{if(Math.abs(v-x)<Math.abs(xs[fi]-x))fi=i});
+ plot($('#z-plot'),{discrete:false,xs,ys,cdf:trapz(xs,ys),x0:lo,x1:hi,mean:m,sd:s,view:'shape',h:190,fixed:fi,fixedLabel:'x',aria:'Normal curve with the score shaded'})});
+bindRanges($('#z-sliders'),zR);zR();
+
+/* ---------- 5 method of moments ---------- */
+const mm={lam:2,data:[],rev:false};
+$('#mm-sliders').innerHTML=rangeRow('mmn','months of data',5,300,1,12,0);
+function mmDraw(){const n=+$('#mmn').value;mm.data=Array.from({length:n},()=>rpois(mm.lam));mmRender()}
+function mmRender(){const d=mm.data,n=d.length,xb=d.reduce((a,b)=>a+b,0)/n;
+  $('#mm-chips').innerHTML=d.slice(0,36).map(v=>`<span>${v}</span>`).join('')+(n>36?`<span>+${n-36} more</span>`:'');
+  $('#mm-tiles').innerHTML=`<div class="tile"><small>Sample mean x̄</small><b>${f(xb)}</b><em>from ${n} months</em></div><div class="tile"><small>Estimate λ̂ = x̄</small><b style="color:var(--a)">${f(xb)}</b><em>method of moments</em></div><div class="tile"><small>True λ</small><b style="color:var(--b)">${mm.rev?f(mm.lam,1):'?'}</b><em>${mm.rev?'error '+f(Math.abs(xb-mm.lam),2):'hidden until revealed'}</em></div>`;
+  $('#mm-rev').setAttribute('aria-pressed',mm.rev);$('#mm-rev').textContent=mm.rev?'Hide true λ':'Reveal true λ';$('#mm-plot')._draw&&$('#mm-plot')._draw()}
+mount($('#mm-plot'),()=>{const d=mm.data;if(!d.length)return;const n=d.length,xb=d.reduce((a,b)=>a+b,0)/n,K=Math.max(9,Math.max(...d)+2),xs=Array.from({length:K},(_,i)=>i),ys=xs.map(k=>d.filter(v=>v===k).length/n);
+ plot($('#mm-plot'),{discrete:true,xs,ys:ys,cdf:cumsum(ys),mean:xb,sd:null,overlay:xs.map(k=>poisPmf(k,Math.max(xb,.01))),dots:true,view:'shape',h:230,aria:'Observed counts versus fitted Poisson',tip:i=>`${xs[i]} protests<br>observed ${f(ys[i]*100,1)}%<br>Poisson fit ${f(poisPmf(xs[i],Math.max(xb,.01))*100,1)}%`})});
+$('#mm-draw').onclick=mmDraw;$('#mm-new').onclick=()=>{mm.lam=Math.round((1+Math.random()*4)*10)/10;mm.rev=false;mmDraw()};$('#mm-rev').onclick=()=>{mm.rev=!mm.rev;mmRender()};
+bindRanges($('#mm-sliders'),mmDraw);mmDraw();
+
+/* ---------- 6 joint ---------- */
+const jr=mulberry(7),Z1=[],Z2=[];for(let i=0;i<140;i++){Z1.push(randn(jr));Z2.push(randn(jr))}
+const jt={u:1};
+$('#jt-sliders').innerHTML=rangeRow('jr','correlation ρ',-1,1,.05,.7,2);
+$$('button[data-u]').forEach(b=>b.onclick=()=>{jt.u=+b.dataset.u;$$('button[data-u]').forEach(x=>x.setAttribute('aria-pressed',x===b));jR()});
+function jData(){const r=+$('#jr').value,k=Math.sqrt(1-r*r),X=Z1,Y=Z1.map((z,i)=>(0.55+0.12*(r*z+k*Z2[i]))*jt.u);return{X,Y,r}}
+function jStats(){const{X,Y}=jData(),n=X.length,mx=X.reduce((a,b)=>a+b)/n,my=Y.reduce((a,b)=>a+b)/n;let cxy=0,vx=0,vy=0;X.forEach((x,i)=>{cxy+=(x-mx)*(Y[i]-my);vx+=(x-mx)**2;vy+=(Y[i]-my)**2});cxy/=n-1;vx/=n-1;vy/=n-1;return{mx,my,cxy,rho:cxy/Math.sqrt(vx*vy),slope:cxy/vx}}
+function jR(){const S=jStats();$('#jt-tiles').innerHTML=`<div class="tile"><small>Covariance</small><b>${f(S.cxy,jt.u===1?3:1)}</b><em>${jt.u===1?'y in proportions':'y in percent: ×100'}</em></div><div class="tile"><small>Correlation ρ</small><b style="color:var(--c)">${f(S.rho)}</b><em>unit-free</em></div>`;$('#jt-plot')._draw()}
+mount($('#jt-plot'),()=>{const el=$('#jt-plot'),{X,Y}=jData(),S=jStats(),W=Math.max(280,el.clientWidth),H=300,m={l:50,r:14,t:14,b:38},iw=W-m.l-m.r,ih=H-m.t-m.b,u=jt.u,x0=-3.5,x1=3.5,y0=.1*u,y1=1*u;
+ const xp=v=>m.l+(v-x0)/(x1-x0)*iw,yp=v=>m.t+ih-(v-y0)/(y1-y0)*ih,cx=xp(S.mx),cy=yp(S.my);let g='';
+ ticks(y0,y1,4).forEach(t=>{g+=`<line class="gr" x1="${m.l}" x2="${W-m.r}" y1="${yp(t)}" y2="${yp(t)}"/><text class="tk" x="${m.l-8}" y="${yp(t)+4}" text-anchor="end">${u===1?f(t,2):Math.round(t)}</text>`});
+ [-3,-2,-1,0,1,2,3].forEach(t=>g+=`<text class="tk" x="${xp(t)}" y="${H-20}" text-anchor="middle">${t}</text>`);
+ g+=`<text class="axl" x="${m.l+iw/2}" y="${H-3}" text-anchor="middle">ideology score</text>`;
+ const q=(xa,xb,ya,yb,c)=>`<rect x="${xa}" y="${ya}" width="${xb-xa}" height="${yb-ya}" style="fill:var(--${c});opacity:.55"/>`;
+ g+=q(cx,W-m.r,m.t,cy,'a-soft')+q(m.l,cx,cy,m.t+ih,'a-soft')+q(m.l,cx,m.t,cy,'b-soft')+q(cx,W-m.r,cy,m.t+ih,'b-soft');
+ X.forEach((x,i)=>{g+=`<circle class="dota" cx="${xp(x)}" cy="${yp(Y[i])}" r="3.6" style="opacity:.9"/>`});
+ const ya=S.my+S.slope*(-3-S.mx),yb=S.my+S.slope*(3-S.mx);g+=`<path class="stroke-b" d="M${xp(-3)},${yp(ya)} L${xp(3)},${yp(yb)}" style="stroke-linecap:round"/>`;
+ g+=`<line class="gd" x1="${cx}" x2="${cx}" y1="${m.t}" y2="${m.t+ih}"/><line class="gd" x1="${m.l}" x2="${W-m.r}" y1="${cy}" y2="${cy}"/>`;
+ el.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Scatter of ideology and turnout">${g}</svg>`});
+bindRanges($('#jt-sliders'),jR);jR();
+$('#lie-sliders').innerHTML=rangeRow('lw','share high repression',0,1,.05,.5,2);
+function lieR(){const w=+$('#lw').value,e=(1-w)*5+w*2,pos=v=>v/6*100;
+ $('#lie-track').innerHTML=`<div class="ax"></div><div class="pt" style="left:${pos(5)}%;width:${14+30*(1-w)}px;height:${14+30*(1-w)}px;background:var(--a)">5</div><div class="pt" style="left:${pos(2)}%;width:${14+30*w}px;height:${14+30*w}px;background:var(--c)">2</div><div class="mk" style="left:${pos(e)}%"><span>E[X] = ${f(e)}</span></div>`;
+ $('#lie-out').innerHTML=`E[X] = (${f(1-w)} × 5) + (${f(w)} × 2) = <b style="color:var(--b)">${f(e)}</b>. Blue dot: E[X | low repression]. Green dot: E[X | high repression]. Dot size is the share of districts.`}
+bindRanges($('#lie-sliders'),lieR);lieR();
+
+/* ---------- 7 simulation ---------- */
+const ll={N:1000,cum:[]};
+segment($('#ll-n'),[[100,'100 flips'],[1000,'1,000'],[10000,'10,000']],1000,k=>{ll.N=+k;llGo()});
+function llGo(){const p=+$('#ll-p').value;let s=0;ll.cum=[];for(let i=1;i<=ll.N;i++){s+=Math.random()<p?1:0;ll.cum.push(s/i)}
+ $('#ll-chips').innerHTML=[10,100,1000,10000].filter(n=>n<=ll.N).map(n=>`<span>${n.toLocaleString()} flips: ${f(ll.cum[n-1],3)}</span>`).join('');$('#ll-plot')._draw()}
+mount($('#ll-plot'),()=>{if(!ll.cum.length)return;const N=ll.N,idx=[...new Set(Array.from({length:260},(_,i)=>Math.max(1,Math.round(Math.pow(10,i*Math.log10(N)/259)))))],p=+$('#ll-p').value;
+ lines($('#ll-plot'),{h:240,x0:1,x1:N,xlog:true,y0:0,y1:1,yticks:[0,.25,.5,.75,1],xticks:[1,10,100,1000,10000].filter(t=>t<=N),yfmt:v=>f(v,2),hline:p,hlabel:'true p',rm:56,aria:'Running proportion of heads',series:[{name:'',c:'a',pts:idx.map(n=>[n,ll.cum[n-1]])}],tip:i=>`${idx[i].toLocaleString()} flips<br>proportion ${f(ll.cum[idx[i]-1],3)}`})});
+$('#ll-go').onclick=llGo;$('#ll-p').oninput=()=>{$('#ll-pv').textContent=f($('#ll-p').value,2);llGo()};llGo();
+function bsGo(){const N=+$('#bs-n').value;let s=0,s2=0;for(let i=0;i<N;i++){let x=0;for(let j=0;j<10;j++)if(Math.random()<.6)x++;s+=x;s2+=x*x}const m=s/N,v=(s2-N*m*m)/(N-1);
+ $('#bs-tiles').innerHTML=`<div class="tile"><small>Mean</small><b style="color:var(--c)">${f(m,3)}</b><em>theory 6 · gap ${f(Math.abs(m-6),3)}</em></div><div class="tile"><small>Variance</small><b style="color:var(--c)">${f(v,3)}</b><em>theory 2.4 · gap ${f(Math.abs(v-2.4),3)}</em></div>`}
+$('#bs-go').onclick=bsGo;bsGo();
+const POP={skew:{l:'Skewed (exponential)',m:1,s:1,g:()=>rexp(1),lo:-3,hi:5},flat:{l:'Flat (uniform 0–1)',m:.5,s:Math.sqrt(1/12),g:()=>Math.random(),lo:-.2,hi:1.2},coin:{l:'Coin (Bernoulli 0.5)',m:.5,s:.5,g:()=>Math.random()<.5?1:0,lo:-.3,hi:1.3}};
+const cl={pop:'skew',data:null};
+segment($('#cl-pop'),Object.keys(POP).map(k=>[k,POP[k].l]),'skew',k=>{cl.pop=k;clGo()});
+$('#cl-sliders').innerHTML=rangeRow('cln','sample size n',1,100,1,1,0);
+function clGo(){const P=POP[cl.pop],n=+$('#cln').value,T=4000,means=new Float64Array(T);for(let t=0;t<T;t++){let s=0;for(let i=0;i<n;i++)s+=P.g();means[t]=s/n}
+ const se=P.s/Math.sqrt(n),lo=P.m-4*se,hi=P.m+4*se,nb=31,bwid=(hi-lo)/nb,cnt=new Array(nb).fill(0);let sm=0,sq=0;
+ for(const v of means){sm+=v;sq+=v*v;const b=Math.floor((v-lo)/bwid);if(b>=0&&b<nb)cnt[b]++}
+ const mean=sm/T,sd=Math.sqrt(sq/T-mean*mean);cl.data={lo,hi,nb,bwid,ys:cnt.map(c=>c/T),se,mean,sd,P,n};
+ $('#cl-tiles').innerHTML=`<div class="tile"><small>SD of the 4,000 means</small><b style="color:var(--a)">${f(sd,3)}</b><em>observed</em></div><div class="tile"><small>Theory σ/√n</small><b style="color:var(--b)">${f(se,3)}</b><em>${f(P.s,3)} / √${n}</em></div><div class="tile"><small>Population SD σ</small><b>${f(P.s,3)}</b><em>for one draw</em></div>`;$('#cl-plot')._draw()}
+mount($('#cl-plot'),()=>{const c=cl.data;if(!c)return;const xs=Array.from({length:c.nb},(_,i)=>c.lo+(i+.5)*c.bwid);
+ plot($('#cl-plot'),{discrete:true,xs,binw:c.bwid,ys:c.ys,cdf:cumsum(c.ys),mean:c.P.m,sd:c.se,overlay:xs.map(x=>normPdf(x,c.P.m,c.se)*c.bwid),view:'shape',h:250,xl:i=>f(xs[i],c.se<.15?2:1),aria:'Histogram of sample means with normal curve',tip:i=>`means near ${f(xs[i],2)}<br>${f(c.ys[i]*100,1)}% of samples<br>normal predicts ${f(normPdf(xs[i],c.P.m,c.se)*c.bwid*100,1)}%`})});
+bindRanges($('#cl-sliders'),clGo);clGo();
+
+/* ---------- 8 DGP ---------- */
+$('#dg-sliders').innerHTML=rangeRow('da','α (intercept)',0,1,.05,.4,2)+rangeRow('db','β (campaign effect)',-.3,.6,.05,.3,2)+rangeRow('ds','σ (noise spread)',.02,.3,.02,.1,2);
+const dr=mulberry(11),DZ=[[],[]],DJ=[[],[]];for(let g=0;g<2;g++)for(let i=0;i<45;i++){DZ[g].push(randn(dr));DJ[g].push(dr()-.5)}
+const dgV=()=>({a:+$('#da').value,b:+$('#db').value,s:+$('#ds').value});
+function dgR(){const{a,b,s}=dgV();$('#dg-eq').innerHTML=`turnout = <span style="color:var(--a)">${f(a)}</span> + <span style="color:var(--b)">${f(b)}</span> × campaign + ε<br>ε ~ Normal(0, ${f(s)})`;$('#dg-plot')._draw()}
+mount($('#dg-plot'),()=>{const el=$('#dg-plot'),{a,b,s}=dgV(),W=Math.max(280,el.clientWidth),H=300,m={l:46,r:64,t:14,b:44},iw=W-m.l-m.r,ih=H-m.t-m.b,y0=-.3,y1=1.7,yp=v=>m.t+ih-(v-y0)/(y1-y0)*ih,cxs=[m.l+iw*.27,m.l+iw*.73];let g='';
+ [0,.5,1,1.5].forEach(t=>g+=`<line class="gr" x1="${m.l}" x2="${W-m.r}" y1="${yp(t)}" y2="${yp(t)}"/><text class="tk" x="${m.l-8}" y="${yp(t)+4}" text-anchor="end">${f(t,1)}</text>`);
+ g+=`<line class="dash" x1="${m.l}" x2="${W-m.r}" y1="${yp(1)}" y2="${yp(1)}" style="stroke:var(--muted);stroke-width:1"/><text class="tk" x="${W-m.r+6}" y="${yp(1)+4}">max 1</text>`;
+ const mu=[a,a+b],w=Math.min(60,iw*.16);
+ for(let gI=0;gI<2;gI++){DZ[gI].forEach((z,i)=>{g+=`<circle cx="${cxs[gI]+DJ[gI][i]*w*1.7}" cy="${yp(mu[gI]+s*z)}" r="3.4" style="fill:var(--${gI?'a':'c'});opacity:.55"/>`});
+  g+=`<line x1="${cxs[gI]-w}" x2="${cxs[gI]+w}" y1="${yp(mu[gI])}" y2="${yp(mu[gI])}" style="stroke:var(--ink);stroke-width:3.5;stroke-linecap:round"/>`;
+  g+=`<text class="tk" x="${cxs[gI]}" y="${H-22}" text-anchor="middle" style="font-size:12.5px;fill:var(--ink2)">${gI?'campaign = 1':'campaign = 0'}</text>`}
+ g+=`<line class="dash" x1="${cxs[0]+w}" x2="${cxs[1]+w+10}" y1="${yp(mu[0])}" y2="${yp(mu[0])}"/>`;
+ const bx=cxs[1]+w+10;g+=`<path d="M${bx},${yp(mu[0])} L${bx},${yp(mu[1])}" style="stroke:var(--b);stroke-width:2.5"/><text class="lab-b" x="${bx+6}" y="${(yp(mu[0])+yp(mu[1]))/2+4}">β = ${f(b)}</text>`;
+ g+=`<text class="lab-a" x="${cxs[0]-w}" y="${yp(mu[0])-8}" style="fill:var(--ink2)">α = ${f(a)}</text>`;
+ el.innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Simulated turnout for areas with and without a campaign">${g}</svg>`});
+bindRanges($('#dg-sliders'),dgR);dgR();
+
+/* ---------- glossary ---------- */
+const GL=[['Random variable','X','A quantity set by chance, like protests next month.'],['Discrete / continuous','','Countable outcomes vs any value in a range. Decides sum vs integral.'],['Distribution','','All possible values and how likely each is.'],['Parameter','p, n, λ, μ, σ','A fixed knob that sets a distribution’s shape. Estimated from data.'],['PMF','P(X = x)','Probability of each exact discrete value.'],['PDF','f(x)','Density curve. Area under it is probability.'],['CDF','F(x)','Probability of x or less. A running total.'],['Bernoulli','p','One trial, success or failure.'],['Binomial','n, p','Count of successes in n independent trials.'],['Poisson','λ','Count of events per unit of exposure. Mean = variance = λ.'],['Exponential','λ','Waiting time until the next event. Mean 1/λ.'],['Uniform','a, b','Equal chance across a range. Mean (a+b)/2.'],['Normal','μ, σ²','Bell curve. Sum of many small influences.'],['i.i.d.','','Independent and identically distributed draws.'],['Expectation','E[X]','Probability-weighted average of X. The mean.'],['Variance','Var(X), σ²','Expected squared distance from the mean.'],['Standard deviation','σ','Square root of variance, in the original units.'],['Moment','','Average of a power of X. Summarizes shape.'],['Skewness','','3rd standardized moment. Asymmetry.'],['Kurtosis','','4th standardized moment. Tail weight.'],['Linearity','E[aX+b]','Equals a·E[X] + b for any distribution.'],['Markov inequality','P(X ≥ a) ≤ E[X]/a','Bound from the mean, for X ≥ 0.'],['Chebyshev inequality','P(|X−μ| ≥ kσ) ≤ 1/k²','Bound from mean and variance, any distribution.'],['z-score','Z = (X−μ)/σ','Distance from the mean in SDs. Mean 0, variance 1.'],['Method of moments','λ̂ = x̄','Set sample moments equal to theory, solve for parameters.'],['Joint distribution','','Describes two or more variables at once.'],['Conditional expectation','E[X | Y]','Expected X once Y is known.'],['Iterated expectations','E[X] = E[E[X|Y]]','Average of the conditional averages.'],['Covariance','Cov(X,Y)','How two variables move together. Depends on units.'],['Correlation','ρ','Covariance rescaled to −1…1. Only linear association.'],['Simulation','','Generate random data from an assumed process to check it.'],['Law of large numbers','','Sample mean converges to the true mean as n grows.'],['Central limit theorem','','Sample means are approximately normal, variance σ²/n.'],['Standard error','σ/√n','Typical distance of a sample mean from the truth.'],['Data generating process','','Your theory of how the data came to exist.'],['Systematic / stochastic','α + βx / ε','Predictable part vs random noise.']];
+function glR(){const q=$('#gl-q').value.toLowerCase();$('#gl').innerHTML=GL.filter(g=>(g[0]+g[1]+g[2]).toLowerCase().includes(q)).map(g=>`<div><b>${g[0]}<code>${g[1]}</code></b>${g[2]}</div>`).join('')||'<p class="small">No match.</p>'}
+$('#gl-q').oninput=glR;glR();
+</script>
+
+</body>
+</html>
